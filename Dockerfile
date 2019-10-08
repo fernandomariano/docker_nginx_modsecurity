@@ -38,7 +38,7 @@ RUN strip /usr/local/modsecurity/bin/* /usr/local/modsecurity/lib/*.a /usr/local
 FROM ubuntu:18.04 AS nginx-build
 
 ENV DEBIAN_FRONTEND noninteractive
-ENV NGINX_VERSION 1.15.0
+ENV NGINX_VERSION 1.17.0
 
 RUN apt-get update -qq && \
 apt install  -qq -y --no-install-recommends --no-install-suggests \
@@ -164,7 +164,7 @@ RUN cd /etc/nginx/modsecurity.d && \
     mv modsecurity.conf-recommended modsecurity.conf
 
 ## Version for ModSecurity Core Rule Set
-ARG VERSION=3.0.2
+ARG VERSION=3.1.0
 
 ## Install Curl
 RUN apt-get update && apt-get install curl -y && apt-get clean
@@ -180,6 +180,7 @@ RUN cp /etc/nginx/owasp-modsecurity-crs-${VERSION}/rules/*.data /etc/nginx/modse
 RUN rm -rf /etc/nginx/owasp-modsecurity-crs-*
 RUN echo "include /etc/nginx/modsecurity.d/crs.conf">>/etc/nginx/modsecurity.d/include.conf
 RUN sed -i -e 's/SecRuleEngine DetectionOnly/SecRuleEngine On/g' /etc/nginx/modsecurity.d/modsecurity.conf
+RUN curl https://raw.githubusercontent.com/SpiderLabs/ModSecurity/49495f1925a14f74f93cb0ef01172e5abc3e4c55/unicode.mapping -o /etc/nginx/modsecurity.d/unicode.mapping
 
 ## Update nginx config
 COPY nginx /etc/nginx/
